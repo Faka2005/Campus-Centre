@@ -11,7 +11,7 @@ export type FriendsUser = {
  */
 export const GetFriendsUser = async (id: string): Promise<FriendsUser | null> => {
   try {
-    const res = await fetch(`http://localhost:5000/friends/user/${id}`, {
+    const res = await fetch(`https://api-campus.onrender.com/friends/user/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });

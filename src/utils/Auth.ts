@@ -15,7 +15,7 @@ export async function RegisterUserApi(
   sexe}:RegisterUser
 ) {
   try {
-    const res = await fetch("http://localhost:5000/register/user", {
+    const res = await fetch("https://api-campus.onrender.com/register/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ firstName, lastName, email, password ,sexe}),
@@ -42,7 +42,7 @@ export async function LoginUserApi(
   password}:LoginUser
 ) {
   try {
-    const res = await fetch("http://localhost:5000/login/user", {
+    const res = await fetch("https://api-campus.onrender.com/login/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({  email, password }),
