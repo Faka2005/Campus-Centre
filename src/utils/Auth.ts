@@ -1,12 +1,20 @@
+import NotificationFriends from '../components/Notification';
 import type { RegisterUser,LoginUser } from './Storagelocal';
 import { setUserStorage } from './Storagelocal';
 // api/Register.ts
 interface ApiError {
   message?: string;
 }
+//https://api-campus.onrender.com
 
-
-
+/**
+ * 🔹 Enfregistre utilisateur
+ * @param firstName- firstName de l’utilisateur
+ * @param lastName - lastName de l’utilisateur
+ * @param email- email de l’utilisateur
+ * @param password - password de l’utilisateur
+ * @param sexe - sexe de l’utilisateur
+ */
 export async function RegisterUserApi(
 {  firstName,
   lastName,
@@ -36,7 +44,11 @@ export async function RegisterUserApi(
   }
 }
 
-
+/**
+ * 🔹 Connecte utilisateur
+ * @param email- email de l’utilisateur
+ * @param password - password de l’utilisateur
+ */
 export async function LoginUserApi(
   {email,
   password}:LoginUser
@@ -62,7 +74,13 @@ export async function LoginUserApi(
   }
 }
 
+/**
+ * 🔹 Déconnecte un utilisateur
+ */
 export function logout(){
-  localStorage.removeItem('user')
+  localStorage.removeItem('user');
+  NotificationFriends({status:"logout"});
+  window.location.reload();
+
 }
 

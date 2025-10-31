@@ -29,19 +29,21 @@ export type LoginUser={
 
 
 
+// utils/Storagelocal.ts
+export const GetTheme = (): "light" | "dark" => {
+  return (localStorage.getItem("theme") as "light" | "dark") || "light";
+};
+
 /**
-*Modifie le theme
-*
-* Pour utiliser dans un composant
-*  const [theme, setTheme] = React.useState(GetTheme());
-*  const toggleTheme = () => setTheme(GetTheme()); 
-*/
-export const GetTheme =()=>{
-  const theme =localStorage.getItem('theme')
-  const newTheme = theme === 'dark' ? 'light' : 'dark';
-  localStorage.setItem('theme',newTheme)
-  
-}
+ * 🔹 Bascule entre clair/sombre et enregistre le choix
+ */
+export const ToggleTheme = (): "light" | "dark" => {
+  const current = GetTheme();
+  const newTheme = current === "dark" ? "light" : "dark";
+  localStorage.setItem("theme", newTheme);
+  return newTheme;
+};
+
 /**
  * Sauvegarde un utilisateur dans le localStorage
  * @param user types ApiLogin
