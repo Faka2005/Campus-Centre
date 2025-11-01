@@ -8,7 +8,7 @@ import BasicAlerts from '../components/Alerts';
 import { LoginUserApi } from '../utils/Auth';
 import "../css/inputs.css";
 import { useNavigate } from 'react-router-dom';
-import NotificationFriends  from '../components/Notification';
+import Notifications  from '../components/Notification';
 
 
 export default function LoginForm() {
@@ -73,7 +73,7 @@ export default function LoginForm() {
          setPassword("");
          navigate("/", { replace: true }); //Emmener à la page d'accceuil et empêcher de revenir en arriére avec les fléches
          window.location.reload();
-         NotificationFriends({status:"login"});
+         Notifications({status:"login"});
        } else {
          setAlert({ type: "error", message: "Erreur" });
        }

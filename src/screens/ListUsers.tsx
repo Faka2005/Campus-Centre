@@ -14,7 +14,7 @@ import {
   GetAcceptedFriends,
 } from "../utils/Friends";
 import { InfoUser } from "../utils/Storagelocal";
-import NotificationFriends from "../components/Notification";
+import Notifications from "../components/Notification";
 
 function UsersListScreen() {
   const navigate = useNavigate();
@@ -60,10 +60,10 @@ function UsersListScreen() {
   const handleAddFriend = async (receiverId: string) => {
     const res = await SendRequestFriends(currentUserId, receiverId);
     if (res.includes("succès")) {
-      NotificationFriends({ status: "pending" });
+      Notifications({ status: "pending" });
       setPendingFriends([...pendingFriends, receiverId]);
     } else {
-      NotificationFriends({ status: "error" });
+      Notifications({ status: "error" });
     }
   };
 

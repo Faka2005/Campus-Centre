@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 
-export default function NotificationFriends({ status }: { status: string }) {
+export default function Notifications({ status }: { status: string }) {
   switch (status) {
     case "pending":
       toast.success("Demande d’ami envoyée ✅");
@@ -22,6 +22,9 @@ export default function NotificationFriends({ status }: { status: string }) {
       break;
     case "error":
       toast.error("Une erreur est survenue ❗");
+      break;
+    case 'deleteAccount':
+      toast.info("Compte supprimé 🗑️");
       break;
     case "removed":
       toast.info("Ami supprimé 🗑️");

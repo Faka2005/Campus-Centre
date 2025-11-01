@@ -2,7 +2,7 @@ import * as React from "react";
 import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
 import { InfoUser, type ApiLogin } from "../utils/Storagelocal";
 import { GetPendingFriends, AcceptFriendRequest, RefuseFriendRequest } from "../utils/Friends";
-import NotificationFriends from "../components/Notification";
+import Notifications from "../components/Notification";
 import { toast } from "react-toastify";
 
 
@@ -49,7 +49,7 @@ function RequestFriend() {
       const newOnes = currentIds.filter((id) => !previous.includes(id));
 
       if (newOnes.length > 0) {
-        NotificationFriends({ status: "newRequest" });
+        Notifications({ status: "newRequest" });
         await fetchRequests();
       }
 

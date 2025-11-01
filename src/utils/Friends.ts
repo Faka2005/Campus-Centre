@@ -90,7 +90,7 @@ export async function SendRequestFriends(
  * @return Liste des demandes d’amis en attente ou null en cas d’erreur
  */
 export async function GetPendingFriends(id: string): Promise<FriendsUser | null> {
-  // TODO: fetch GET /friends/pending/user/:id
+  
   try {
     const res = await fetch(`https://api-campus.onrender.com/friends/pending/user/${id}`, {
       method: "GET",
@@ -118,7 +118,7 @@ export async function GetPendingFriends(id: string): Promise<FriendsUser | null>
  * @return Liste des demandes d’amis refusées ou null en cas d’erreur
  */
 export async function GetRefusedFriends(id: string): Promise<FriendsUser | null> {
-  // TODO: fetch GET /friends/refused/user/:id
+  
     try {
     const res = await fetch(`https://api-campus.onrender.com/friends/refused/user/${id}`, {
       method: "GET",

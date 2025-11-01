@@ -105,7 +105,7 @@ function FriendsScreens() {
                   Message
                 </Button>
                   <Button
-                  variant="secondary"
+                  variant="outline-danger"
                   color="secondary"
                   onClick={() => RemoveFriend(userId!, friend.userId)}
                 >
