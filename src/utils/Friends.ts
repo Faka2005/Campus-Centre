@@ -12,7 +12,7 @@ export type FriendsUser = {
  */
 export async function GetAcceptedFriends  (id: string): Promise<FriendsUser | null>  {
   try {
-    const res = await fetch(`https://api-campus.onrender.com/friends/accepted/user/${id}`, {
+    const res = await fetch(`http://localhost:5000/friends/accepted/user/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -60,7 +60,7 @@ export async function SendRequestFriends(
   receiverId: string
 ): Promise<string> {
   try {
-    const res = await fetch("https://api-campus.onrender.com/friends/user", {
+    const res = await fetch("http://localhost:5000/friends/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ senderId, receiverId }),
@@ -92,7 +92,7 @@ export async function SendRequestFriends(
 export async function GetPendingFriends(id: string): Promise<FriendsUser | null> {
   
   try {
-    const res = await fetch(`https://api-campus.onrender.com/friends/pending/user/${id}`, {
+    const res = await fetch(`http://localhost:5000/friends/pending/user/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -120,7 +120,7 @@ export async function GetPendingFriends(id: string): Promise<FriendsUser | null>
 export async function GetRefusedFriends(id: string): Promise<FriendsUser | null> {
   
     try {
-    const res = await fetch(`https://api-campus.onrender.com/friends/refused/user/${id}`, {
+    const res = await fetch(`http://localhost:5000/friends/refused/user/${id}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -153,7 +153,7 @@ export async function UpdateFriendStatus(
   status: "accepted" | "refused"
 ): Promise<string> {
   try {
-    const res = await fetch("https://api-campus.onrender.com/friends/user", {
+    const res = await fetch("http://localhost:5000/friends/user", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ senderId, receiverId, status }),
@@ -185,7 +185,7 @@ export async function DeleteFriend(
   receiverId: string
 ): Promise<string> {
   try {
-    const res = await fetch("https://api-campus.onrender.com/friends/user", {
+    const res = await fetch("http://localhost:5000/friends/user", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ senderId, receiverId }),

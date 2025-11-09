@@ -16,7 +16,7 @@ export type User = {
 
 export async function ListUser(): Promise<User[]> {
   try {
-    const res = await fetch("https://api-campus.onrender.com/profiles/user/", {
+    const res = await fetch("http://localhost:5000/profiles/user/", {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -32,5 +32,23 @@ export async function ListUser(): Promise<User[]> {
   } catch (error) {
     console.error("Erreur réseau dans ListUser:", error);
     return [];
+  }
+}
+
+export async function GetUserById(userId: string): Promise<User | null> {
+  try {
+    const res = await fetch(`http://localhost:5000/profiles/user/${userId}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.error("Erreur dans GetUserById:", data.message);
+      return null;
+    }
+    return data.profil || null;
+  } catch (error) {
+    console.error("Erreur réseau dans GetUserById:", error);
+    return null;
   }
 }

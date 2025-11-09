@@ -4,7 +4,7 @@ import LoginForm from "./screens/LoginScreen";
 import RegisterForm from "./screens/RegisterScreens";
 import Dashboard from "./screens/Dashboards";
 import FriendsScreens from "./screens/FriendsScreen";
-// import Test from "./screens/test";
+import Test from "./screens/test";
 import { ToastContainer } from "react-toastify";
 // --- Pages futures (tu pourras les créer ensuite) ---
 // import ProfilePage from "./screens/ProfilScreens";
@@ -12,8 +12,6 @@ import { ToastContainer } from "react-toastify";
 // import SettingsPage from "./screens/SettingsScreen";
 // import SearchPage from "./screens/SearchScreen";
 // import FriendRequestsPage from "./screens/FriendRequestsScreen";
-// import MessagesPage from "./screens/MessagesScreen";
-// import ChatScreen from "./screens/ChatScreen";
 // import TutorsPage from "./screens/TutorsScreen";
 // import TutorProfilePage from "./screens/TutorProfileScreen";
 // import AboutPage from "./screens/AboutScreen";
@@ -22,7 +20,8 @@ import { ToastContainer } from "react-toastify";
 // import AdminDashboard from "./screens/AdminDashboard";
 // import NotFound from "./screens/NotFound";
 import UsersListScreen from "./screens/ListUsers";
-
+import ChatBox from "./screens/Message/Chatbox";
+import SignalerScreen from "./screens/Signaler";
 function App() {
   return (
     <Router>
@@ -48,12 +47,12 @@ function App() {
         <Route path="/search" element={<SearchPage />} /> */}
 
         {/* --- Messagerie --- */}
-        {/* <Route path="/messages" element={<MessagesPage />} />
-        <Route path="/messages/:id" element={<ChatScreen />} /> */}
-
+         <Route path="/messages" element={<ChatBox />} /> 
         {/* --- Tutorat / Campus --- */}
         {/* <Route path="/tutors" element={<TutorsPage />} /> */}
         {/* <Route path="/tutor/:id" element={<TutorProfilePage />} /> */}
+        {/* --- Signalement --- */}
+        <Route path="/signaler" element={<SignalerScreen />} />
 
         {/* --- Admin (optionnel) --- */}
         {/* <Route path="/admin" element={<AdminDashboard />} /> */}
@@ -61,7 +60,7 @@ function App() {
         {/* --- Page 404 --- */}
         {/* <Route path="*" element={<NotFound />} /> */}
 
-        {/* <Route path="/test" element={<Test />} /> */}
+        <Route path="/test" element={<Test />} />
       </Routes>
     </Router>
   );

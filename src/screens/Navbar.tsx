@@ -29,6 +29,7 @@ const userLinks = [
   { name: "Profil", path: "/" },
   { name: "Rechercher", path: "/search" },
   { name: "Paramètres", path: "/settings" },
+  { name: "Messages", path: "/messages" },
 ];
 
 

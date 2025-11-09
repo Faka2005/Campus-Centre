@@ -5,7 +5,7 @@ import { setUserStorage } from './Storagelocal';
 interface ApiError {
   message?: string;
 }
-//https://api-campus.onrender.com
+//http://localhost:5000
 
 /**
  * 🔹 Enfregistre utilisateur et le connecte
@@ -24,7 +24,7 @@ export async function RegisterUserApi(
   sexe}:RegisterUser
 ) {
   try {
-    const res = await fetch("https://api-campus.onrender.com/register/user", {
+    const res = await fetch("http://localhost:5000/register/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ firstName, lastName, email, password ,sexe}),
@@ -56,7 +56,7 @@ export async function LoginUserApi(
   password}:LoginUser
 ) {
   try {
-    const res = await fetch("https://api-campus.onrender.com/login/user", {
+    const res = await fetch("http://localhost:5000/login/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({  email, password }),
@@ -84,7 +84,7 @@ export async function LoginUserApi(
  */
 export async function DeleteUserApi(id: string) {
   try {
-    const res = await fetch(`https://api-campus.onrender.com/delete/user/${id}`, {
+    const res = await fetch(`http://localhost:5000/delete/user/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
@@ -116,3 +116,80 @@ export function logout(){
 
 }
 
+/**
+ * Récupère la photo de profil d’un utilisateur
+ * @param userId - ID de l’utilisateur
+ * @return URL de la photo de profil ou null en cas d’erreur
+ */
+export async function fetchUserProfilePhoto(userId: string): Promise<string | null> {
+  try {
+    const res = await fetch(`http://localhost:5000/user/photo/${userId}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!res.ok) {
+      throw new Error("Erreur lors de la récupération de la photo de profil");
+    }
+
+    const data = await res.json();
+    return data.photoUrl; // Supposant que l’API renvoie l’URL de la photo sous la clé 'photoUrl'
+  } catch (error) {
+    console.error("Erreur dans fetchUserProfilePhoto :", error);
+    return null;
+  }
+}
+ 
+/**
+ * 🔹 Met à jour les informations de l’utilisateur
+ * @param userId - ID de l’utilisateur
+ * @param updates - Objet contenant les champs à mettre à jour
+ * @return Objet indiquant le succès ou l’échec de l’opération
+ */
+export async function updateUserApi(userId: string, updates: Partial<RegisterUser>) {
+  try {
+    const res = await fetch(`http://localhost:5000/user/${userId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Erreur lors de la mise à jour de l’utilisateur");
+    } 
+    setUserStorage(data.updatedUser);
+    Notifications({ status: "updateProfile" });
+
+    return { success: true, data };
+  } catch (error: unknown) {
+    const err = error as ApiError;
+    console.error("Erreur dans updateUserApi :", err);
+    return { success: false, message: err.message || "Erreur serveur" };
+  }
+}
+
+export async function uploadUserProfilePhoto(userId: string, file: File) {
+  try {
+    const formData = new FormData();
+    formData.append("photo", file);
+    formData.append("userId", userId);
+
+    const res = await fetch("http://localhost:5000/photo", {
+      method: "POST",
+      body: formData, // <-- pas de Content-Type
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    console.log("✅ Photo uploadée :", data);
+    localStorage.setItem("userPhoto", data.path);
+    return { success: true, data };
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("Erreur dans uploadUserProfilePhoto :", err);
+    return { success: false, message: err.message || "Erreur serveur" };
+  }
+}

@@ -4,6 +4,7 @@ import { Button, Spinner, Modal, Container } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { DeleteUserApi } from "../utils/Auth";
 import { InfoUser, useUserStorage } from "../utils/Storagelocal";
+import Avatar from "@mui/material/Avatar";
 
 export default function ProfilScreens() {
   const navigate = useNavigate();
@@ -62,6 +63,7 @@ export default function ProfilScreens() {
     <div className="p-3">
       {/* 🧾 Infos profil */}
       <h3 className="mb-4 text-center">👤 Mon Profil</h3>
+      <Avatar src= "/uploads/1762622645420-Capture d'Ã©cran 2025-08-16 145451.png"/>
       <p>
         <strong>Nom :</strong> {user.lastName}
       </p>

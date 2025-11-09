@@ -4,6 +4,8 @@ import FriendsScreens from "./FriendsScreen";
 import RequestFriend from "./RequestFriends";
 import {  useUserStorage } from "../utils/Storagelocal";
 import ProfilScreens from "./ProfilScreens";
+// import { Badge } from "react-bootstrap";
+import ChatBox from "./Message/Chatbox";
 function Dashboard() {
   const user = useUserStorage();
   const navigate = useNavigate();
@@ -48,8 +50,8 @@ function Dashboard() {
         </Tab>
 
         {/* 💬 Messages */}
-        <Tab eventKey="messages" title="Messages">
-          <div className="p-3">Contenu : messages</div>
+        <Tab eventKey="messages" title="Messages" >
+          <ChatBox />
         </Tab>
 
         {/* 🤝 Demandes d’amis */}
