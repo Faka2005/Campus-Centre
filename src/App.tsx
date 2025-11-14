@@ -11,7 +11,6 @@ import { ToastContainer } from "react-toastify";
 // import EditProfilePage from "./screens/EditProfileScreen";
 // import SettingsPage from "./screens/SettingsScreen";
 // import SearchPage from "./screens/SearchScreen";
-// import FriendRequestsPage from "./screens/FriendRequestsScreen";
 // import TutorsPage from "./screens/TutorsScreen";
 // import TutorProfilePage from "./screens/TutorProfileScreen";
 // import AboutPage from "./screens/AboutScreen";
@@ -43,8 +42,7 @@ function App() {
 
         {/* --- Pages sociales --- */}
         <Route path="/friends/user" element={<FriendsScreens />} />
-        {/* <Route path="/friends/requests" element={<FriendRequestsPage />} />
-        <Route path="/search" element={<SearchPage />} /> */}
+        {/*<Route path="/search" element={<SearchPage />} /> */}
 
         {/* --- Messagerie --- */}
          <Route path="/messages" element={<ChatBox />} /> 

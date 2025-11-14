@@ -1,131 +1,99 @@
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import * as React from "react";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import Divider from "@mui/material/Divider";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
-import Typography from "@mui/material/Typography";
-import { useUserStorage, InfoUser } from "../../utils/Storagelocal";
-import { GetAcceptedFriends } from "../../utils/Friends";
-import type { FriendsUser } from "../../utils/Friends";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
-import Badge from "@mui/material/Badge";
+import { useUserStorage, InfoUser } from "../../utils/Storagelocal";
+import { GetAcceptedFriends } from "../../utils/Friends";
+import type { ApiLogin } from "../../utils/Storagelocal";
 
-export default function FriendList({
-  onSelectFriend,
-}: {
+interface FriendListProps {
   onSelectFriend: (id: string) => void;
-}) {
+}
+
+export default function FriendList({ onSelectFriend }: FriendListProps) {
   const user = useUserStorage();
-  const [friends, setFriends] = React.useState<FriendsUser["amis"]>([]);
+  const [friends, setFriends] = React.useState<ApiLogin[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
 
-  const userId = InfoUser("userid")?.toString();
+  // ✅ Convertir le résultat en string si nécessaire
+  const userIdRaw = InfoUser("userid") ?? user?.userId;
+  const userId = typeof userIdRaw === "string" ? userIdRaw : undefined;
 
   React.useEffect(() => {
     if (!userId) return;
 
-    const fetchFriends = async () => {
+    (async () => {
       setLoading(true);
-      const data = await GetAcceptedFriends(userId);
-      if (data && data.amis) setFriends(data.amis);
-      setLoading(false);
-    };
-
-    fetchFriends();
+      try {
+        const data = await GetAcceptedFriends(userId);
+        // ✅ Vérifier que data n’est pas null avant d’accéder à amis
+        if (data && Array.isArray(data.amis)) {
+          setFriends(data.amis);
+        } else {
+          setFriends([]);
+        }
+      } catch (err) {
+        console.error("Erreur lors de la récupération des amis :", err);
+        setFriends([]);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [userId]);
 
-  if (!user) {
+  if (!user)
     return (
       <Container className="text-center py-5">
         <h4>Veuillez vous connecter pour voir vos messages.</h4>
         <Button variant="primary">Se connecter</Button>
       </Container>
     );
-  }
 
-  if (loading) {
+  if (loading)
     return (
-      <Container className="py-5 text-center">
+      <Container className="text-center py-5">
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Chargement...</span>
         </div>
         <p>Chargement des amis...</p>
       </Container>
     );
-  }
-
-  if (friends.length === 0) {
-    return (
-      <Container className="text-center py-5">
-        <h5>😕 Vous n’avez pas encore d’amis</h5>
-        <Button variant="primary">Rechercher des amis</Button>
-      </Container>
-    );
-  }
 
   const filteredFriends = friends.filter((f) =>
-    (f.firstName + " " + f.lastName).toLowerCase().includes(search.toLowerCase())
+    `${f.firstName} ${f.lastName}`.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <>
-      <Box sx={{ display: "flex", alignItems: "flex-end", p: 1 }}>
-        <SearchOutlinedIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />
-        <TextField
-          label="Rechercher un ami"
-          variant="standard"
+    <Container>
+      <div style={{ margin: "10px 0" }}>
+        <input
+          type="text"
+          placeholder="Rechercher un ami..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          fullWidth
+          style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
         />
-      </Box>
+      </div>
 
-      <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-        {filteredFriends.map((friend) => (
-          <React.Fragment key={friend.userId}>
-            <ListItem
-              alignItems="flex-start"
+      {filteredFriends.length === 0 ? (
+        <p style={{ textAlign: "center", color: "#888" }}>Aucun ami trouvé</p>
+      ) : (
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          {filteredFriends.map((friend) => (
+            <li
+              key={friend.userId}
               onClick={() => onSelectFriend(friend.userId)}
-              sx={{ cursor: "pointer" }}
+              style={{
+                padding: "10px",
+                borderBottom: "1px solid #eee",
+                cursor: "pointer",
+              }}
             >
-              <ListItemAvatar>
-                <Badge
-                  color="success"
-                  variant="dot"
-                  overlap="circular"
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                >
-                  <Avatar src={friend.photoUrl || "/static/images/avatar/1.jpg"} />
-                </Badge>
-              </ListItemAvatar>
-
-              <ListItemText
-                primary={`${friend.firstName} ${friend.lastName}`}
-                secondary={
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{ color: "text.secondary" }}
-                  >
-                    Dernier message ici...
-                  </Typography>
-                }
-              />
-            </ListItem>
-            <Divider component="li" />
-          </React.Fragment>
-        ))}
-      </List>
-    </>
+              {friend.firstName} {friend.lastName}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Container>
   );
 }

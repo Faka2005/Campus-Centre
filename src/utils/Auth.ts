@@ -110,7 +110,7 @@ export async function DeleteUserApi(id: string) {
  * 🔹 Déconnecte un utilisateur
  */
 export function logout(){
-  localStorage.removeItem('user');
+  sessionStorage.removeItem('user');
   Notifications({status:"logout"});
   window.location.reload();
 
@@ -185,7 +185,7 @@ export async function uploadUserProfilePhoto(userId: string, file: File) {
     if (!res.ok) throw new Error(data.message);
 
     console.log("✅ Photo uploadée :", data);
-    localStorage.setItem("userPhoto", data.path);
+    sessionStorage.setItem("userPhoto", data.path);
     return { success: true, data };
   } catch (error: unknown) {
     const err = error as Error;

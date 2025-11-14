@@ -1,52 +1,76 @@
-import { useEffect, useState } from "react";
-import { useUserStorage } from "../../utils/Storagelocal";
-import {GetMessagesBetweenUsers,SendMessage,type Message,} from "../../utils/Message";
-import { socket } from "../../utils/socketClient";
 import * as React from "react";
-export default function Message({ idFriend }: { idFriend: string | null }) {
+import { useUserStorage } from "../../utils/Storagelocal";
+import { GetMessagesBetweenUsers, SendMessage } from "../../utils/Message";
+import { socket } from "../../utils/socketClient";
+import type { Message as MessageType } from "../../utils/Message";
+
+import Button from "@mui/material/Button";
+
+/* 🔹 Format WhatsApp */
+function formatDateWhatsApp(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const n = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const diffDays = (n.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
+
+  if (diffDays === 0) {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  if (diffDays === 1) {
+    return "Hier";
+  }
+
+  return date.toLocaleDateString([], {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+interface MessageProps {
+  idFriend: string | null;
+}
+
+export default function Message({ idFriend }: MessageProps) {
   const user = useUserStorage();
-  const [messages, setMessages] = React.useState<Message[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [messageSending, setMessageSending] = useState("");
+  const [messages, setMessages] = React.useState<MessageType[]>([]);
+  const [messageSending, setMessageSending] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const bottomRef = React.useRef<HTMLDivElement | null>(null);
 
-  // 🔹 Envoyer un message
-  const handleSendMessage = async () => {
-    if (!user?.userId || !idFriend || messageSending.trim() === "") return;
+  const isDisabled = messageSending.trim() === "" || loading;
 
-    // Envoi au serveur via socket.io
-    socket.emit("send_message", {
-      senderId: user.userId,
-      receiverId: idFriend,
-      content: messageSending.trim(),
-    });
+  /* 🔹 Charger les messages */
+  React.useEffect(() => {
+    if (!user?.userId || !idFriend) return;
 
-    // Envoi en base via ton API REST (sécurité)
-    await SendMessage(user.userId, idFriend, messageSending.trim());
-
-    setMessageSending("");
-  };
-
-  // 🔹 Charger les messages au montage
-  useEffect(() => {
     const fetchMessages = async () => {
-      if (!user?.userId || !idFriend) return;
       setLoading(true);
-      const data = await GetMessagesBetweenUsers(user.userId, idFriend);
-      if (data) setMessages(data);
-      setLoading(false);
+      try {
+        const data = await GetMessagesBetweenUsers(user.userId, idFriend);
+        setMessages(data);
+      } catch (err) {
+        console.error("Erreur lors du chargement des messages :", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchMessages();
   }, [idFriend, user?.userId]);
 
-  // 🔹 Écouter les nouveaux messages en temps réel
-  useEffect(() => {
-    if (!socket) return;
+  /* 🔹 Réception en temps réel */
+  React.useEffect(() => {
+    if (!idFriend || !user?.userId) return;
 
-    const handleIncoming = (msg: Message) => {
+    const handleIncoming = (msg: MessageType) => {
       if (
-        msg.senderId === idFriend ||
-        msg.receiverId === idFriend
+        (msg.senderId === idFriend && msg.receiverId === user.userId) ||
+        (msg.senderId === user.userId && msg.receiverId === idFriend)
       ) {
         setMessages((prev) => [...prev, msg]);
       }
@@ -57,11 +81,37 @@ export default function Message({ idFriend }: { idFriend: string | null }) {
     return () => {
       socket.off("receive_message", handleIncoming);
     };
-  }, [idFriend]);
+  }, [idFriend, user?.userId]);
 
+  /* 🔹 Scroll automatique */
+  React.useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  /* 🔹 Envoi message */
+  const handleSendMessage = async () => {
+    if (isDisabled || !user?.userId || !idFriend) return;
+
+    const newMessage: MessageType = {
+      _id: Math.random().toString(36).substring(2, 9),
+      senderId: user.userId,
+      receiverId: idFriend,
+      content: messageSending.trim(),
+      timestamp: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
+    setMessageSending("");
+
+    socket.emit("send_message", newMessage);
+
+    await SendMessage(user.userId, idFriend, newMessage.content);
+  };
+
+  /* 🔹 Si aucun ami */
   if (!idFriend)
     return (
-      <p style={{ textAlign: "center", padding: "20px" }}>
+      <p style={{ textAlign: "center", padding: "20px", color: "#666" }}>
         👈 Sélectionne un ami pour discuter
       </p>
     );
@@ -69,8 +119,16 @@ export default function Message({ idFriend }: { idFriend: string | null }) {
   if (loading) return <p>Chargement des messages...</p>;
 
   return (
-    <>
-      <div style={{ padding: "10px", height: "75vh", overflowY: "auto" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "80vh" }}>
+      {/* Zone messages */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: "10px",
+          backgroundColor: "#f5f5f5",
+        }}
+      >
         {messages.length === 0 ? (
           <p style={{ textAlign: "center", color: "#888" }}>
             Aucun message pour l’instant
@@ -78,61 +136,76 @@ export default function Message({ idFriend }: { idFriend: string | null }) {
         ) : (
           messages.map((msg) => (
             <div
-              key={msg._id || Math.random()}
+              key={msg._id}
               style={{
-                textAlign: msg.senderId === user?.userId ? "right" : "left",
-                margin: "8px 0",
+                display: "flex",
+                justifyContent:
+                  msg.senderId === user?.userId ? "flex-end" : "flex-start",
+                marginBottom: "8px",
               }}
             >
               <div
                 style={{
-                  display: "inline-block",
                   backgroundColor:
                     msg.senderId === user?.userId ? "#DCF8C6" : "#EAEAEA",
                   padding: "8px 12px",
                   borderRadius: "12px",
                   maxWidth: "70%",
+                  wordWrap: "break-word",
                 }}
               >
                 <p style={{ margin: 0 }}>{msg.content}</p>
+
+                <p
+                  style={{
+                    fontSize: "0.75em",
+                    color: "#888",
+                    marginTop: "4px",
+                    textAlign: "right",
+                  }}
+                >
+                  {formatDateWhatsApp(msg.timestamp)}
+                </p>
               </div>
             </div>
           ))
         )}
+
+        <div ref={bottomRef} />
       </div>
+
+      {/* Zone input */}
       <div
         style={{
           display: "flex",
           padding: "10px",
           borderTop: "1px solid #ddd",
+          backgroundColor: "#fff",
         }}
       >
         <input
           type="text"
           value={messageSending}
           onChange={(e) => setMessageSending(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && !isDisabled && handleSendMessage()}
           placeholder="Écrire un message..."
           style={{
             flex: 1,
             padding: "8px",
-            borderRadius: "4px",
+            borderRadius: "8px",
             border: "1px solid #ccc",
           }}
         />
-        <button
+
+        <Button
+          variant="contained"
+          disabled={isDisabled}
           onClick={handleSendMessage}
-          style={{
-            marginLeft: "8px",
-            padding: "8px 16px",
-            borderRadius: "4px",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            border: "none",
-          }}
+          style={{ marginLeft: "8px", borderRadius: "8px" }}
         >
           Envoyer
-        </button>
+        </Button>
       </div>
-    </>
+    </div>
   );
 }

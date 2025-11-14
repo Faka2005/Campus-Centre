@@ -13,24 +13,23 @@ export type User = {
       photoUrl: string;
       createdAt: string;
     };
-
-export async function ListUser(): Promise<User[]> {
+    export async function ListUser(): Promise<User[]> {
   try {
-    const res = await fetch("http://localhost:5000/profiles/user/", {
+    const res = await fetch("http://localhost:5000/profiles/users", {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
 
     const data = await res.json();
     if (!res.ok) {
-      console.error("Erreur dans ListUser:", data.message);
+      console.error("Erreur ListUser:", data.message);
       return [];
     }
 
-    console.log(data.profil);
-    return data.profil || [];
+    console.log("Profils récupérés:", data.profils);
+    return data.profils || [];
   } catch (error) {
-    console.error("Erreur réseau dans ListUser:", error);
+    console.error("Erreur réseau ListUser:", error);
     return [];
   }
 }

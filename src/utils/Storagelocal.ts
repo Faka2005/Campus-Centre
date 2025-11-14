@@ -31,7 +31,7 @@ export type LoginUser={
 
 // utils/Storagelocal.ts
 export const GetTheme = (): "light" | "dark" => {
-  return (localStorage.getItem("theme") as "light" | "dark") || "light";
+  return (sessionStorage.getItem("theme") as "light" | "dark") || "light";
 };
 
 /**
@@ -40,26 +40,26 @@ export const GetTheme = (): "light" | "dark" => {
 export const ToggleTheme = (): "light" | "dark" => {
   const current = GetTheme();
   const newTheme = current === "dark" ? "light" : "dark";
-  localStorage.setItem("theme", newTheme);
+  sessionStorage.setItem("theme", newTheme);
   return newTheme;
 };
 
 /**
- * Sauvegarde un utilisateur dans le localStorage
+ * Sauvegarde un utilisateur dans le sessionStorage
  * @param user types ApiLogin
  */
 export  const setUserStorage = (user: ApiLogin) => {
-  localStorage.setItem('user', JSON.stringify(user));
+  sessionStorage.setItem('user', JSON.stringify(user));
   GetTheme()
 };
 
 
 /**
- * Récupère un utilisateur depuis le localStorage
+ * Récupère un utilisateur depuis le sessionStorage
  * @returns un json
  */
 export const getUserStorage = (): ApiLogin | null => {
-  const data = localStorage.getItem("user");
+  const data = sessionStorage.getItem("user");
   if (!data) return null;
 
   try {
@@ -74,16 +74,16 @@ export const getUserStorage = (): ApiLogin | null => {
 
 
 /**
- * Supprime l'utilisateur du localStorage
+ * Supprime l'utilisateur du sessionStorage
  */
 export const removeUserStorage = () => {
-  localStorage.removeItem('user');
+  sessionStorage.removeItem('user');
 };
 
 export const getUserStorageTuple = (): [
   string, string, string, string, string,string, string, string, string[], boolean, string, string
 ] => {
-  const data = localStorage.getItem("user");
+  const data = sessionStorage.getItem("user");
   if (!data) return ["", "", "", "","", "", "", "", [], false, "", ""];
 
   try {
@@ -164,7 +164,7 @@ export const useUserStorage = (): ApiLogin | null => {
       setUser(getUserStorage());
     };
 
-    // Écoute les changements dans le localStorage (même depuis un autre onglet)
+    // Écoute les changements dans le sessionStorage (même depuis un autre onglet)
     window.addEventListener("storage", handleStorageChange);
 
     return () => {

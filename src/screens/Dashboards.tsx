@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Container, Button, Tab, Tabs } from "react-bootstrap";
 import FriendsScreens from "./FriendsScreen";
-import RequestFriend from "./RequestFriends";
-import {  useUserStorage } from "../utils/Storagelocal";
+import FriendRequestsPage from "./FriendRequestsScreen";
+import { useUserStorage } from "../utils/Storagelocal";
 import ProfilScreens from "./ProfilScreens";
 // import { Badge } from "react-bootstrap";
 import ChatBox from "./Message/Chatbox";
@@ -57,7 +57,7 @@ function Dashboard() {
         {/* 🤝 Demandes d’amis */}
         <Tab eventKey="demandes" title="Demandes d’amis">
           <div className="p-3">
-            <RequestFriend />
+            <FriendRequestsPage userId={user?.userId}  />
           </div>
         </Tab>
       </Tabs>
