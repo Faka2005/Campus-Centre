@@ -5,7 +5,7 @@ import { setUserStorage } from './Storagelocal';
 interface ApiError {
   message?: string;
 }
-//http://localhost:5000
+//https://api-campus.onrender.com
 
 /**
  * 🔹 Enfregistre utilisateur et le connecte
@@ -24,7 +24,7 @@ export async function RegisterUserApi(
   sexe}:RegisterUser
 ) {
   try {
-    const res = await fetch("http://localhost:5000/register/user", {
+    const res = await fetch("https://api-campus.onrender.com/register/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ firstName, lastName, email, password ,sexe}),
@@ -56,7 +56,7 @@ export async function LoginUserApi(
   password}:LoginUser
 ) {
   try {
-    const res = await fetch("http://localhost:5000/login/user", {
+    const res = await fetch("https://api-campus.onrender.com/login/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({  email, password }),
@@ -84,7 +84,7 @@ export async function LoginUserApi(
  */
 export async function DeleteUserApi(id: string) {
   try {
-    const res = await fetch(`http://localhost:5000/delete/user/${id}`, {
+    const res = await fetch(`https://api-campus.onrender.com/delete/user/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
@@ -123,7 +123,7 @@ export function logout(){
  */
 export async function fetchUserProfilePhoto(userId: string): Promise<string | null> {
   try {
-    const res = await fetch(`http://localhost:5000/user/photo/${userId}`, {
+    const res = await fetch(`https://api-campus.onrender.com/user/photo/${userId}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -148,7 +148,7 @@ export async function fetchUserProfilePhoto(userId: string): Promise<string | nu
  */
 export async function updateUserApi(userId: string, updates: Partial<RegisterUser>) {
   try {
-    const res = await fetch(`http://localhost:5000/user/${userId}`, {
+    const res = await fetch(`https://api-campus.onrender.com/user/${userId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),
@@ -176,7 +176,7 @@ export async function uploadUserProfilePhoto(userId: string, file: File) {
     formData.append("photo", file);
     formData.append("userId", userId);
 
-    const res = await fetch("http://localhost:5000/photo", {
+    const res = await fetch("https://api-campus.onrender.com/photo", {
       method: "POST",
       body: formData, // <-- pas de Content-Type
     });

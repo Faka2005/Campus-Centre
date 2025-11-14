@@ -66,7 +66,7 @@ export default function Test() {
 
       {uploadedPhotoUrl ? (
         <img
-          src="http://localhost:5000/uploads/1762622645420-Capture%20d'%C3%83%C2%A9cran%202025-08-16%20145451.png"
+          src="https://api-campus.onrender.com/uploads/1762622645420-Capture%20d'%C3%83%C2%A9cran%202025-08-16%20145451.png"
           alt="Photo de profil"
           style={{
             marginTop: "20px",

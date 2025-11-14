@@ -14,7 +14,7 @@ export type MessageSignal={
  */
 export  async function SendSignal(senderId:string,sujet:string,content:string):Promise<boolean>{
     try{
-        const response = await fetch("http://localhost:5000/messages/signal/send", {
+        const response = await fetch("https://api-campus.onrender.com/messages/signal/send", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ senderId, sujet, content }),
@@ -38,7 +38,7 @@ export  async function SendSignal(senderId:string,sujet:string,content:string):P
  */
 export async function GetSignalsByUser(senderId:string):Promise<MessageSignal[]>{
     try{
-        const response = await fetch(`http://localhost:5000/messages/signals/${senderId}`); 
+        const response = await fetch(`https://api-campus.onrender.com/messages/signals/${senderId}`); 
         if(response.ok){
             const data = await response.json();
             return data.signals as MessageSignal[];

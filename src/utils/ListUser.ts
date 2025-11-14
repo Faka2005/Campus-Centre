@@ -15,7 +15,7 @@ export type User = {
     };
     export async function ListUser(): Promise<User[]> {
   try {
-    const res = await fetch("http://localhost:5000/profiles/users", {
+    const res = await fetch("https://api-campus.onrender.com/profiles/users", {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -36,7 +36,7 @@ export type User = {
 
 export async function GetUserById(userId: string): Promise<User | null> {
   try {
-    const res = await fetch(`http://localhost:5000/profiles/user/${userId}`, {
+    const res = await fetch(`https://api-campus.onrender.com/profiles/user/${userId}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
