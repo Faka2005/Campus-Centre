@@ -1,193 +1,168 @@
-export default function  EditProfilePage(){
-    return <h1>Profile Edit</h1>
-}
-
-
-
-import { useState, useEffect, typeChangeEvent } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Spinner, Form, Container } from "react-bootstrap";
-import { toast } from "react-toastify";
+import { Container, Button, Form, Spinner } from "react-bootstrap";
+import { updateUserApi } from "../utils/Auth";
+import { useUserStorage, setUserStorage, type ApiLogin } from "../utils/Storagelocal";
 import Avatar from "@mui/material/Avatar";
-import {
-fetchUserProfilePhoto,
-uploadUserProfilePhoto,
-updateUserApi,
-} from "../utils/Auth";
-import { InfoUser, useUserStorage, setUserStorage } from "../utils/Storagelocal";
 
-export default function EditProfilePage() {
-const navigate = useNavigate();
-const user = useUserStorage();
-const userId = InfoUser("userid")?.toString() || "";
+export default function EditProfilPage() {
+  const navigate = useNavigate();
+  const user = useUserStorage();
 
-const [firstName, setFirstName] = useState(user?.firstName || "");
-const [lastName, setLastName] = useState(user?.lastName || "");
-const [filiere, setFiliere] = useState(user?.filiere || "");
-const [niveau, setNiveau] = useState(user?.niveau || "");
-const [campus, setCampus] = useState(user?.campus || "");
-const [bio, setBio] = useState(user?.bio || "");
-const [photo, setPhoto] = useState<string | null>(user?.photoUrl || null);
-const [file, setFile] = useState<File | null>(null);
-const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState<Partial<ApiLogin>>({
+    firstName: user?.firstName,
+    lastName: user?.lastName,
+    bio: user?.bio,
+    filiere: user?.filiere,
+    niveau: user?.niveau,
+    campus: user?.campus,
+  });
 
-// Charger la photo existante si elle existe
-useEffect(() => {
-async function loadPhoto() {
-if (!userId) return;
-const photoUrl = await fetchUserProfilePhoto(userId);
-setPhoto(photoUrl || user?.photoUrl || null);
-}
-loadPhoto();
-}, [userId]);
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(user?.photoUrl || null);
+  const [saving, setSaving] = useState(false);
 
-// Gestion du changement de fichier
-const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-const selected = e.target.files?.[0];
-if (!selected) return;
-setFile(selected);
-setPhoto(URL.createObjectURL(selected)); // aperçu
-};
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
 
-// Sauvegarde des modifications
-const handleSave = async () => {
-if (!userId) return;
-setSaving(true);
+  // Prévisualisation de la photo choisie
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+    setFile(selected);
+    setPreview(URL.createObjectURL(selected));
+  };
 
-try {
-let uploadedPhotoUrl = photo;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
-// Upload de la photo si un fichier a été sélectionné
-if (file) {
-const uploadRes = await uploadUserProfilePhoto(userId, file);
-if (uploadRes.success) {
-uploadedPhotoUrl = uploadRes.data.fileUrl;
-setUserStorage(uploadRes.updatedUser); // mettre à jour le sessionStorage
-} else {
-toast.error("Erreur lors de l’upload de la photo ❌");
-setSaving(false);
-return;
-}
-}
+  const handleSubmit = async () => {
+    setSaving(true);
+    try {
+      // 🔹 Mise à jour profil
+      const res = await updateUserApi(user.userId, form);
+      if (!res.success) throw new Error(res.message);
 
-// Mise à jour des infos utilisateur
-const updateRes = await updateUserApi(userId, {
-firstName,
-lastName,
-filiere,
-niveau,
-campus,
-bio,
-photoUrl: uploadedPhotoUrl,
-});
+      // 🔹 Stockage des nouvelles données localement
+      if (res.data.profil) setUserStorage(res.data.profil);
 
-if (updateRes.success) {
-toast.success("Profil mis à jour ✅");
-navigate("/profile"); // redirection vers la page profil
-} else {
-toast.error("Erreur lors de la mise à jour du profil ❌");
-}
-} catch (err) {
-console.error(err);
-toast.error("Erreur serveur inattendue ❌");
-} finally {
-setSaving(false);
-}
-};
+      // 🔹 Si nouvelle photo upload
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("userId", user.userId);
+        const uploadRes = await fetch("http://localhost:5000/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await uploadRes.json();
+        if (data.success && data.fileUrl) {
+          const updatedUser = { ...res.data.profil, photoUrl: data.fileUrl };
+          setUserStorage(updatedUser);
+          setPreview(data.fileUrl);
+        }
+      }
 
-if (!user) {
-return (
-<Container className="text-center mt-5">
-<h2>Vous devez être connecté pour éditer votre profil</h2>
-<Button onClick={() => navigate("/login")}>Se connecter</Button>
-</Container>
-);
-}
+      alert("Profil mis à jour ✅");
+      navigate("/profile");
+    } catch (err: any) {
+      console.error(err);
+      alert("Erreur lors de la mise à jour du profil : " + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
-return (
-<Container className="mt-4">
-<h2 className="mb-4 text-center">✏️ Modifier mon profil</h2>
+  return (
+    <Container className="py-4">
+      <h2 className="mb-4 text-center">Modifier mon profil</h2>
 
-<div className="text-center mb-4">
-<Avatar
-src={photo ? `http://localhost:5000${photo}` : "/uploads/default-avatar.png"}
-sx={{ width: 100, height: 100, margin: "0 auto" }}
-/>
-<Form.Group className="mt-2">
-<Form.Label>Changer la photo</Form.Label>
-<Form.Control type="file" accept="image/*" onChange={handleFileChange} />
-</Form.Group>
-</div>
+      <div className="text-center mb-3">
+        <Avatar
+          src={preview || "/uploads/default-avatar.png"}
+          style={{ width: 120, height: 120, margin: "0 auto" }}
+        />
+        <Form.Group className="mt-2">
+          <Form.Control type="file" accept="image/*" onChange={handleFileChange} />
+        </Form.Group>
+      </div>
 
-<Form>
-<Form.Group className="mb-3">
-<Form.Label>Prénom</Form.Label>
-<Form.Control
-type="text"
-value={firstName}
-onChange={(e) => setFirstName(e.target.value)}
-/>
-</Form.Group>
+      <Form>
+        <Form.Group className="mb-3">
+          <Form.Label>Prénom</Form.Label>
+          <Form.Control
+            type="text"
+            name="firstName"
+            value={form.firstName || ""}
+            onChange={handleChange}
+          />
+        </Form.Group>
 
-<Form.Group className="mb-3">
-<Form.Label>Nom</Form.Label>
-<Form.Control
-type="text"
-value={lastName}
-onChange={(e) => setLastName(e.target.value)}
-/>
-</Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Nom</Form.Label>
+          <Form.Control
+            type="text"
+            name="lastName"
+            value={form.lastName || ""}
+            onChange={handleChange}
+          />
+        </Form.Group>
 
-<Form.Group className="mb-3">
-<Form.Label>Filière</Form.Label>
-<Form.Control
-type="text"
-value={filiere}
-onChange={(e) => setFiliere(e.target.value)}
-/>
-</Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Bio</Form.Label>
+          <Form.Control
+            as="textarea"
+            name="bio"
+            value={form.bio || ""}
+            onChange={handleChange}
+          />
+        </Form.Group>
 
-<Form.Group className="mb-3">
-<Form.Label>Niveau</Form.Label>
-<Form.Control
-type="text"
-value={niveau}
-onChange={(e) => setNiveau(e.target.value)}
-/>
-</Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Filière</Form.Label>
+          <Form.Control
+            type="text"
+            name="filiere"
+            value={form.filiere || ""}
+            onChange={handleChange}
+          />
+        </Form.Group>
 
-<Form.Group className="mb-3">
-<Form.Label>Campus</Form.Label>
-<Form.Control
-type="text"
-value={campus}
-onChange={(e) => setCampus(e.target.value)}
-/>
-</Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Niveau</Form.Label>
+          <Form.Control
+            type="text"
+            name="niveau"
+            value={form.niveau || ""}
+            onChange={handleChange}
+          />
+        </Form.Group>
 
-<Form.Group className="mb-3">
-<Form.Label>Bio</Form.Label>
-<Form.Control
-as="textarea"
-rows={3}
-value={bio}
-onChange={(e) => setBio(e.target.value)}
-/>
-</Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Campus</Form.Label>
+          <Form.Control
+            type="text"
+            name="campus"
+            value={form.campus || ""}
+            onChange={handleChange}
+          />
+        </Form.Group>
 
-<div className="text-center">
-<Button variant="primary" onClick={handleSave} disabled={saving}>
-{saving ? (
-<>
-<Spinner animation="border" size="sm" className="me-2" />
-Enregistrement...
-</>
-) : (
-"Enregistrer les modifications"
-)}
-</Button>
-</div>
-</Form>
-</Container>
-);
+        <Button variant="primary" onClick={handleSubmit} disabled={saving}>
+          {saving ? (
+            <>
+              <Spinner animation="border" size="sm" className="me-2" />
+              Enregistrement...
+            </>
+          ) : (
+            "Enregistrer"
+          )}
+        </Button>
+      </Form>
+    </Container>
+  );
 }

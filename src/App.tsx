@@ -8,7 +8,7 @@ import Test from "./screens/test";
 import { ToastContainer } from "react-toastify";
 // --- Pages futures (tu pourras les créer ensuite) ---
 // import ProfilePage from "./screens/ProfilScreens";
-// import EditProfilePage from "./screens/EditProfileScreen";
+import EditProfilePage from "./screens/EditProfilPage";
 // import SettingsPage from "./screens/SettingsScreen";
 // import SearchPage from "./screens/SearchScreen";
 // import TutorsPage from "./screens/TutorsScreen";
@@ -36,9 +36,9 @@ function App() {
         <Route path="/privacy" element={<PrivacyPage />} /> */}
         <Route path="/search/users" element={<UsersListScreen />} />
         {/* --- Espace utilisateur --- */}
-        {/* <Route path="/profile" element={<ProfilePage />} />
+        {/* <Route path="/profile" element={<ProfilePage />} />*/}
         <Route path="/profile/edit" element={<EditProfilePage />} />
-        <Route path="/settings" element={<SettingsPage />} /> */}
+        {/* <Route path="/settings" element={<SettingsPage />} /> */}
 
         {/* --- Pages sociales --- */}
         <Route path="/friends/user" element={<FriendsScreens />} />
