@@ -4,7 +4,6 @@ import LoginForm from "./screens/LoginScreen";
 import RegisterForm from "./screens/RegisterScreens";
 import Dashboard from "./screens/Dashboards";
 import FriendsScreens from "./screens/FriendsScreen";
-import Test from "./screens/test";
 import { ToastContainer } from "react-toastify";
 // --- Pages futures (tu pourras les créer ensuite) ---
 // import ProfilePage from "./screens/ProfilScreens";
@@ -58,7 +57,7 @@ function App() {
         {/* --- Page 404 --- */}
         {/* <Route path="*" element={<NotFound />} /> */}
 
-        <Route path="/test" element={<Test />} />
+ 
       </Routes>
     </Router>
   );
