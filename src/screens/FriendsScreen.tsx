@@ -16,7 +16,7 @@ function FriendsScreens() {
   const [friends, setFriends] = React.useState<FriendsUser["amis"]>([]);
   const [loading, setLoading] = React.useState(true);
 
-  // 🔹 Récupération de l’ID depuis le sessionStorage (comme dans Dashboard)
+  // 🔹 Récupération de l’ID depuis le localStorage (comme dans Dashboard)
   const userId = InfoUser("userid")?.toString();
 
   React.useEffect(() => {

@@ -25,7 +25,7 @@ export default function Test() {
     if (res.success) {
       alert("Photo envoyée avec succès ✅");
       setUploadedPhotoUrl(res.data.path); // mettre à jour l'image affichée
-      sessionStorage.setItem("photoUrl", res.data.path);
+      localStorage.setItem("photoUrl", res.data.path);
     } else {
       alert("Erreur lors de l’envoi de la photo ❌");
     }
