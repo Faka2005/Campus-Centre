@@ -116,29 +116,7 @@ export function logout(){
 
 }
 
-/**
- * Récupère la photo de profil d’un utilisateur
- * @param userId - ID de l’utilisateur
- * @return URL de la photo de profil ou null en cas d’erreur
- */
-export async function fetchUserProfilePhoto(userId: string): Promise<string | null> {
-  try {
-    const res = await fetch(`https://api-campus.onrender.com/user/photo/${userId}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
 
-    if (!res.ok) {
-      throw new Error("Erreur lors de la récupération de la photo de profil");
-    }
-
-    const data = await res.json();
-    return data.photoUrl; // Supposant que l’API renvoie l’URL de la photo sous la clé 'photoUrl'
-  } catch (error) {
-    console.error("Erreur dans fetchUserProfilePhoto :", error);
-    return null;
-  }
-}
  
 /**
  * 🔹 Met à jour les informations de l’utilisateur
@@ -170,26 +148,3 @@ export async function updateUserApi(userId: string, updates: Partial<RegisterUse
   }
 }
 
-export async function uploadUserProfilePhoto(userId: string, file: File) {
-  try {
-    const formData = new FormData();
-    formData.append("photo", file);
-    formData.append("userId", userId);
-
-    const res = await fetch("https://api-campus.onrender.com/photo", {
-      method: "POST",
-      body: formData, // <-- pas de Content-Type
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message);
-
-    console.log("✅ Photo uploadée :", data);
-    localStorage.setItem("userPhoto", data.path);
-    return { success: true, data };
-  } catch (error: unknown) {
-    const err = error as Error;
-    console.error("Erreur dans uploadUserProfilePhoto :", err);
-    return { success: false, message: err.message || "Erreur serveur" };
-  }
-}
