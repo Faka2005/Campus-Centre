@@ -20,15 +20,7 @@ const [photo, setPhoto] = useState<string | null>(null); // état pour la photo
 const handleClose = () => setShowModal(false);
 const handleShow = () => setShowModal(true);
 
-// 🔹 Charger la photo de profil au montage
-useEffect(() => {
-async function loadPhoto() {
-if (!userId) return;
-const photoUrl = await fetchUserProfilePhoto(userId);
-setPhoto(photoUrl); // met à jour l'état
-}
-loadPhoto();
-}, [userId]);
+
 
 // 🔥 Suppression de compte
 const handleDeleteAccount = async () => {
