@@ -74,12 +74,9 @@ Se connecter
 
 return (
 <div className="p-3">
-{/* 🧾 Infos profil */}
-{photo ? (
-<Avatar src={`http://localhost:5000${photo}`} />
-) : (
+
 <Avatar src="/uploads/default-avatar.png" />
-)}
+
 
 <h3 className="mb-4 text-center">👤 Mon Profil</h3>
 

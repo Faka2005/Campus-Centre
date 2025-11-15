@@ -35,7 +35,7 @@ export async function RegisterUserApi(
     if (!res.ok) {
       throw new Error(data.message || "Erreur lors de l’inscription");
     }
-    LoginUserApi({email,password});
+    
     return { success: true, data };
     
   } catch (error: unknown) {

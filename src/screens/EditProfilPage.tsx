@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Container, Button, Form, Spinner } from "react-bootstrap";
 import { updateUserApi } from "../utils/Auth";
 import { useUserStorage, setUserStorage, type ApiLogin } from "../utils/Storagelocal";
-import Avatar from "@mui/material/Avatar";
 
 export default function EditProfilPage() {
   const navigate = useNavigate();
@@ -18,8 +17,7 @@ export default function EditProfilPage() {
     campus: user?.campus,
   });
 
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(user?.photoUrl || null);
+
   const [saving, setSaving] = useState(false);
 
   if (!user) {
@@ -27,13 +25,7 @@ export default function EditProfilPage() {
     return null;
   }
 
-  // Prévisualisation de la photo choisie
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (!selected) return;
-    setFile(selected);
-    setPreview(URL.createObjectURL(selected));
-  };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -51,21 +43,7 @@ export default function EditProfilPage() {
       if (res.data.profil) setUserStorage(res.data.profil);
 
       // 🔹 Si nouvelle photo upload
-      if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("userId", user.userId);
-        const uploadRes = await fetch("http://localhost:5000/upload", {
-          method: "POST",
-          body: formData,
-        });
-        const data = await uploadRes.json();
-        if (data.success && data.fileUrl) {
-          const updatedUser = { ...res.data.profil, photoUrl: data.fileUrl };
-          setUserStorage(updatedUser);
-          setPreview(data.fileUrl);
-        }
-      }
+
 
       alert("Profil mis à jour ✅");
       navigate("/profile");
@@ -81,15 +59,7 @@ export default function EditProfilPage() {
     <Container className="py-4">
       <h2 className="mb-4 text-center">Modifier mon profil</h2>
 
-      <div className="text-center mb-3">
-        <Avatar
-          src={preview || "/uploads/default-avatar.png"}
-          style={{ width: 120, height: 120, margin: "0 auto" }}
-        />
-        <Form.Group className="mt-2">
-          <Form.Control type="file" accept="image/*" onChange={handleFileChange} />
-        </Form.Group>
-      </div>
+
 
       <Form>
         <Form.Group className="mb-3">
