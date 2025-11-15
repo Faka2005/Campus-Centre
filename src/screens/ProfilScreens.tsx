@@ -1,6 +1,6 @@
 
 
-import { useState } from "react";
+import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Spinner, Modal, Container } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -13,8 +13,8 @@ const navigate = useNavigate();
 const user = useUserStorage();
 const userId = InfoUser("userid")?.toString();
 
-const [deleting, setDeleting] = useState(false);
-const [showModal, setShowModal] = useState(false);
+const [deleting, setDeleting] = React.useState(false);
+const [showModal, setShowModal] = React.useState(false);
 
 const handleClose = () => setShowModal(false);
 const handleShow = () => setShowModal(true);
