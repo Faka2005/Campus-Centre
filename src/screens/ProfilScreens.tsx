@@ -1,10 +1,10 @@
 
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Spinner, Modal, Container } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { DeleteUserApi, fetchUserProfilePhoto } from "../utils/Auth";
+import { DeleteUserApi } from "../utils/Auth";
 import { InfoUser, useUserStorage } from "../utils/Storagelocal";
 import Avatar from "@mui/material/Avatar";
 
@@ -15,7 +15,6 @@ const userId = InfoUser("userid")?.toString();
 
 const [deleting, setDeleting] = useState(false);
 const [showModal, setShowModal] = useState(false);
-const [photo, setPhoto] = useState<string | null>(null); // état pour la photo
 
 const handleClose = () => setShowModal(false);
 const handleShow = () => setShowModal(true);
