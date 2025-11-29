@@ -27,7 +27,7 @@ const publicLinks = [
 // 🔗 Liens disponibles uniquement pour les utilisateurs connectés
 const userLinks = [
   { name: "Profil", path: "/" },
-  { name: "Rechercher", path: "/search" },
+  { name: "Rechercher", path: "/search/users" },
   { name: "Paramètres", path: "/settings" },
   { name: "Messages", path: "/messages" },
 ];
