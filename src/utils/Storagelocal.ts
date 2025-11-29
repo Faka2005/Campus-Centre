@@ -24,7 +24,7 @@ export type LoginUser={
     bio: string,
     filiere: string,
     niveau: string,
-    interests: [],
+    interests: string[],
     isTutor: boolean,
     campus: string,
     photoUrl: string,

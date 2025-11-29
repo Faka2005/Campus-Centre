@@ -15,6 +15,7 @@ import {
 } from "../utils/Friends";
 import { InfoUser } from "../utils/Storagelocal";
 import Notifications from "../components/Notification";
+import { useUsersStatus } from "../utils/Auth";
 
 function UsersListScreen() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ function UsersListScreen() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [sendingRequestIds, setSendingRequestIds] = React.useState<string[]>([]);
-
+  const status = useUsersStatus(users.map(u => u.userId));
   // 🔹 Utilisateur courant
   const currentUserId = InfoUser("userid")?.toString() || "";
 
@@ -120,58 +121,87 @@ function UsersListScreen() {
           const isSending = sendingRequestIds.includes(user.userId);
 
           return (
-            <Col md={4} key={user._id} className="mb-3">
-              <Card className="text-center shadow-sm p-3">
-                <Image
-                  src={
-                    user.photoUrl ||
-                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-                  }
-                  roundedCircle
-                  width="100"
-                  height="100"
-                  className="mb-3"
-                  style={{ objectFit: "cover" }}
-                />
-                <h5>
-                  {user.firstName} {user.lastName}
-                </h5>
-                <p className="text-muted">
-                  {user.filiere || "Étudiant"} – {user.niveau || ""}
-                </p>
-                <p className="text-muted">Campus : {user.campus || "?"}</p>
+<Col md={4} key={user._id} className="mb-3">
+  <Card 
+    className="text-center shadow-sm p-3"
+    style={{ width: "18rem", height: "300px", position: "relative" }} // taille fixe
+  >
+    <div style={{ position: "relative", display: "inline-block" }}>
+<Image
+  src={user.photoUrl || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
+  roundedCircle
+  width="100"
+  height="100"
+  className="mb-3"
+  style={{ objectFit: "cover" }}
+/>
+<span
+  style={{
+    position: "absolute",
+    bottom: 5,
+    right: 5,
+    width: 15,
+    height: 15,
+    borderRadius: "50%",
+    backgroundColor: status[user.userId] ? "green" : "red",
+    border: "2px solid white",
+  }}
+/>
+      {/* Petit point de statut */}
+      <span
+        style={{
+          position: "absolute",
+          bottom: 5,
+          right: 5,
+          width: 15,
+          height: 15,
+          borderRadius: "50%",
+          backgroundColor: status[user.userId] === true ? "green" : "red",
+          border: "2px solid white",
+        }}
+      ></span>
+    </div>
 
-                <div className="d-flex justify-content-center gap-2">
-                  <Button
-                    variant="outline-primary"
-                    onClick={() => navigate(`/profile/user/${user.userId}`)}
-                    aria-label={`Voir le profil de ${user.firstName} ${user.lastName}`}
-                  >
-                    Voir le profil
-                  </Button>
+    <h5>
+      {user.firstName} {user.lastName}
+    </h5>
+    <p className="text-muted">
+      {user.filiere || "Étudiant"} – {user.niveau || ""}
+    </p>
+    <p className="text-muted">Campus : {user.campus || "?"}</p>
 
-                  {isAccepted ? (
-                    <Button variant="secondary" disabled>
-                      ✅ Ami(e)
-                    </Button>
-                  ) : isPending || isSending ? (
-                    <Button variant="warning" disabled>
-                      ⏳ {isSending ? "Envoi..." : "En attente"}
-                      {isSending && (
-                        <span className="spinner-border spinner-border-sm ms-2"></span>
-                      )}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="success"
-                      onClick={() => handleAddFriend(user.userId)}
-                    >
-                      ➕ Ajouter en ami
-                    </Button>
-                  )}
-                </div>
-              </Card>
-            </Col>
+    <div className="d-flex justify-content-center gap-2">
+      <Button
+        variant="outline-primary"
+        onClick={() => navigate(`/profile/user/${user.userId}`)}
+        aria-label={`Voir le profil de ${user.firstName} ${user.lastName}`}
+      >
+        Voir le profil
+      </Button>
+
+      {isAccepted ? (
+        <Button variant="secondary" disabled>
+          ✅ Ami(e)
+        </Button>
+      ) : isPending || isSending ? (
+        <Button variant="warning" disabled>
+          ⏳ {isSending ? "Envoi..." : "En attente"}
+          {isSending && (
+            <span className="spinner-border spinner-border-sm ms-2"></span>
+          )}
+        </Button>
+      ) : (
+        <Button
+          variant="success"
+          onClick={() => handleAddFriend(user.userId)}
+        >
+          ➕ Ajouter en ami
+        </Button>
+      )}
+    </div>
+  </Card>
+</Col>
+
           );
         })}
       </Row>

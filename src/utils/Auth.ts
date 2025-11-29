@@ -2,7 +2,7 @@ import Notifications from '../components/Notification';
 import type { RegisterUser,LoginUser } from './Storagelocal';
 import { setUserStorage } from './Storagelocal';
 // api/Register.ts
-interface ApiError {
+export interface ApiError {
   message?: string;
 }
 //https://api-campus.onrender.com
@@ -35,7 +35,7 @@ export async function RegisterUserApi(
     if (!res.ok) {
       throw new Error(data.message || "Erreur lors de l’inscription");
     }
-    
+    LoginUserApi({email,password})
     return { success: true, data };
     
   } catch (error: unknown) {
@@ -68,7 +68,7 @@ export async function LoginUserApi(
       throw new Error(data.message || "Erreur lors de la connexion");
     }
     if(data.profile)setUserStorage(data.profile)
-    window.location.reload();
+   
     return { success: true, data };
   } catch (error: unknown) {
     const err = error as ApiError;
@@ -126,7 +126,7 @@ export function logout(){
  */
 export async function updateUserApi(userId: string, updates: Partial<RegisterUser>) {
   try {
-    const res = await fetch(`https://api-campus.onrender.com/user/${userId}`, {
+    const res = await fetch(`https://api-campus.onrender.com/profiles/user/${userId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),
@@ -146,5 +146,33 @@ export async function updateUserApi(userId: string, updates: Partial<RegisterUse
     console.error("Erreur dans updateUserApi :", err);
     return { success: false, message: err.message || "Erreur serveur" };
   }
+}
+
+import { useEffect, useState } from "react";
+import { socket } from "./socketClient";
+
+type UserStatus = Record<string, boolean>; // userId => online/offline
+
+export function useUsersStatus(userIds: string[]): UserStatus {
+    const [status, setStatus] = useState<UserStatus>({});
+
+    useEffect(() => {
+        const handleStatus = (data: { userId: string; online: boolean }) => {
+            setStatus((prev) => ({ ...prev, [data.userId]: data.online }));
+        };
+
+        socket.on("user_status_update", handleStatus);
+
+        // Initialiser les statuts à false
+        const initialStatus: UserStatus = {};
+        userIds.forEach((id) => (initialStatus[id] = false));
+        setStatus(initialStatus);
+
+        return () => {
+            socket.off("user_status_update", handleStatus);
+        };
+    }, [userIds]);
+
+    return status;
 }
 

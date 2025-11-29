@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="Campus Centre icon">
+  <!-- Blue speech bubble -->
+  <g fill="none" fill-rule="evenodd">
+    <path d="M160 200h560a96 96 0 0 1 96 96v304a96 96 0 0 1-96 96H360l-108 80a24 24 0 0 1-38-20V696H160a96 96 0 0 1-96-96V296a96 96 0 0 1 96-96z" fill="#007BFF"/>
+    <!-- Tail refinement: ensure smooth bubble tail -->
+  </g>
+
+  <!-- White silhouettes: center + two side figures -->
+  <!-- center head -->
+  <circle cx="460" cy="360" r="70" fill="#ffffff"/>
+  <!-- center body (rounded rectangle) -->
+  <rect x="370" y="430" rx="40" ry="40" width="180" height="150" fill="#ffffff"/>
+
+  <!-- left head -->
+  <circle cx="300" cy="360" r="50" fill="#ffffff"/>
+  <!-- left body -->
+  <rect x="250" y="430" rx="32" ry="32" width="100" height="120" fill="#ffffff"/>
+
+  <!-- right head -->
+  <circle cx="620" cy="360" r="50" fill="#ffffff"/>
+  <!-- right body -->
+  <rect x="570" y="430" rx="32" ry="32" width="100" height="120" fill="#ffffff"/>
+
+  <!-- Optional subtle inner shadow using low-opacity shape (for depth) -->
+  <path d="M160 200h560a96 96 0 0 1 96 96v304a96 96 0 0 1-96 96H360l-108 80a24 24 0 0 1-38-20V696H160a96 96 0 0 1-96-96V296a96 96 0 0 1 96-96z" fill="#005fd6" opacity="0.06"/>
+</svg>
