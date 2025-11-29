@@ -12,7 +12,7 @@ export type Message = {
  */
 export async function SendMessage(senderId: string, receiverId: string, content: string): Promise<boolean> {
   try {
-    const response = await fetch("https://api-campus.onrender.com/messages/send", {
+    const response = await fetch("https://api-campus.onrender.com/message/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ senderId, receiverId, content }),
@@ -44,7 +44,7 @@ export async function GetMessagesBetweenUsers(userId1: string, userId2: string):
  */
 export async function EditMessage(messageId: string, newContent: string): Promise<boolean> {
   try {
-    const response = await fetch(`https://api-campus.onrender.com/messages/edit/${messageId}`, {
+    const response = await fetch(`https://api-campus.onrender.com/message/edit/${messageId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: newContent }),
