@@ -156,7 +156,7 @@ function UsersListScreen() {
           width: 15,
           height: 15,
           borderRadius: "50%",
-          backgroundColor: status[user.userId] === true ? "green" : "red",
+          backgroundColor:status[user.userId] === true ? "green" : "red" ,
           border: "2px solid white",
         }}
       ></span>

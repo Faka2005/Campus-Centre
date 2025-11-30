@@ -3,7 +3,6 @@ import { useUserStorage } from "../../utils/Storagelocal";
 import { GetMessagesBetweenUsers, SendMessage } from "../../utils/Message";
 import { socket } from "../../utils/socketClient";
 import type { Message as MessageType } from "../../utils/Message";
-
 import Button from "@mui/material/Button";
 
 /* 🔹 Format WhatsApp */
@@ -16,19 +15,10 @@ function formatDateWhatsApp(dateString: string): string {
 
   const diffDays = (n.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
 
-  if (diffDays === 0) {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
+  if (diffDays === 0) return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  if (diffDays === 1) return "Hier";
 
-  if (diffDays === 1) {
-    return "Hier";
-  }
-
-  return date.toLocaleDateString([], {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  return date.toLocaleDateString([], { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
 interface MessageProps {
@@ -44,7 +34,7 @@ export default function Message({ idFriend }: MessageProps) {
 
   const isDisabled = messageSending.trim() === "" || loading;
 
-  /* 🔹 Charger les messages */
+  /* 🔹 Charger les messages depuis l'API */
   React.useEffect(() => {
     if (!user?.userId || !idFriend) return;
 
@@ -63,17 +53,15 @@ export default function Message({ idFriend }: MessageProps) {
     fetchMessages();
   }, [idFriend, user?.userId]);
 
-  /* 🔹 Réception en temps réel */
+  /* 🔹 Réception en temps réel (évite les doublons) */
   React.useEffect(() => {
     if (!idFriend || !user?.userId) return;
 
     const handleIncoming = (msg: MessageType) => {
-      if (
-        (msg.senderId === idFriend && msg.receiverId === user.userId) ||
-        (msg.senderId === user.userId && msg.receiverId === idFriend)
-      ) {
-        setMessages((prev) => [...prev, msg]);
-      }
+      setMessages(prev => {
+        if (prev.some(m => m._id === msg._id)) return prev;
+        return [...prev, msg];
+      });
     };
 
     socket.on("receive_message", handleIncoming);
@@ -100,109 +88,54 @@ export default function Message({ idFriend }: MessageProps) {
       timestamp: new Date().toISOString(),
     };
 
-    setMessages((prev) => [...prev, newMessage]);
+    // ⚡ Ajouter localement
+    setMessages(prev => [...prev, newMessage]);
     setMessageSending("");
 
+    // ⚡ Émettre au serveur
     socket.emit("send_message", newMessage);
 
+    // ⚡ API REST pour sauvegarde
     await SendMessage(user.userId, idFriend, newMessage.content);
   };
 
-  /* 🔹 Si aucun ami */
   if (!idFriend)
-    return (
-      <p style={{ textAlign: "center", padding: "20px", color: "#666" }}>
-        👈 Sélectionne un ami pour discuter
-      </p>
-    );
+    return <p style={{ textAlign: "center", padding: "20px", color: "#666" }}>👈 Sélectionne un ami pour discuter</p>;
 
   if (loading) return <p>Chargement des messages...</p>;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "80vh" }}>
       {/* Zone messages */}
-      <div
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: "10px",
-          backgroundColor: "#f5f5f5",
-        }}
-      >
+      <div style={{ flex: 1, overflowY: "auto", padding: "10px", backgroundColor: "#f5f5f5" }}>
         {messages.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#888" }}>
-            Aucun message pour l’instant
-          </p>
+          <p style={{ textAlign: "center", color: "#888" }}>Aucun message pour l’instant</p>
         ) : (
-          messages.map((msg) => (
-            <div
-              key={msg._id}
-              style={{
-                display: "flex",
-                justifyContent:
-                  msg.senderId === user?.userId ? "flex-end" : "flex-start",
-                marginBottom: "8px",
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor:
-                    msg.senderId === user?.userId ? "#DCF8C6" : "#EAEAEA",
-                  padding: "8px 12px",
-                  borderRadius: "12px",
-                  maxWidth: "70%",
-                  wordWrap: "break-word",
-                }}
-              >
+          messages.map(msg => (
+            <div key={msg._id} style={{ display: "flex", justifyContent: msg.senderId === user?.userId ? "flex-end" : "flex-start", marginBottom: "8px" }}>
+              <div style={{ backgroundColor: msg.senderId === user?.userId ? "#DCF8C6" : "#EAEAEA", padding: "8px 12px", borderRadius: "12px", maxWidth: "70%", wordWrap: "break-word" }}>
                 <p style={{ margin: 0 }}>{msg.content}</p>
-
-                <p
-                  style={{
-                    fontSize: "0.75em",
-                    color: "#888",
-                    marginTop: "4px",
-                    textAlign: "right",
-                  }}
-                >
+                <p style={{ fontSize: "0.75em", color: "#888", marginTop: "4px", textAlign: "right" }}>
                   {formatDateWhatsApp(msg.timestamp)}
                 </p>
               </div>
             </div>
           ))
         )}
-
         <div ref={bottomRef} />
       </div>
 
       {/* Zone input */}
-      <div
-        style={{
-          display: "flex",
-          padding: "10px",
-          borderTop: "1px solid #ddd",
-          backgroundColor: "#fff",
-        }}
-      >
+      <div style={{ display: "flex", padding: "10px", borderTop: "1px solid #ddd", backgroundColor: "#fff" }}>
         <input
           type="text"
           value={messageSending}
-          onChange={(e) => setMessageSending(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && !isDisabled && handleSendMessage()}
+          onChange={e => setMessageSending(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && !isDisabled && handleSendMessage()}
           placeholder="Écrire un message..."
-          style={{
-            flex: 1,
-            padding: "8px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
+          style={{ flex: 1, padding: "8px", borderRadius: "8px", border: "1px solid #ccc" }}
         />
-
-        <Button
-          variant="contained"
-          disabled={isDisabled}
-          onClick={handleSendMessage}
-          style={{ marginLeft: "8px", borderRadius: "8px" }}
-        >
+        <Button variant="contained" disabled={isDisabled} onClick={handleSendMessage} style={{ marginLeft: "8px", borderRadius: "8px" }}>
           Envoyer
         </Button>
       </div>
