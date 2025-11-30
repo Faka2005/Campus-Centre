@@ -8,7 +8,7 @@ export type FriendsUser = {
 // 🔹 Fonction générique pour récupérer des amis selon le chemin
 async function fetchFriends(path: string): Promise<FriendsUser | null> {
   try {
-    const res = await fetch(`https://api-campus.onrender.com/friends/${path}`, {
+    const res = await fetch(`http://localhost:5000/friends/${path}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
@@ -54,7 +54,7 @@ export async function SendRequestFriends(
   receiverId: string
 ): Promise<string> {
   try {
-    const res = await fetch("https://api-campus.onrender.com/friends/user", {
+    const res = await fetch("http://localhost:5000/friends/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ senderId, receiverId }),
@@ -75,7 +75,7 @@ export async function UpdateFriendStatus(
   status: "accepted" | "refused"
 ): Promise<string> {
   try {
-    const res = await fetch("https://api-campus.onrender.com/friends/user", {
+    const res = await fetch("http://localhost:5000/friends/user", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ senderId, receiverId, status }),
@@ -95,7 +95,7 @@ export async function DeleteFriend(
   receiverId: string
 ): Promise<string> {
   try {
-    const res = await fetch("https://api-campus.onrender.com/friends/user", {
+    const res = await fetch("http://localhost:5000/friends/user", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ senderId, receiverId }),

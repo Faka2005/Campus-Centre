@@ -188,7 +188,7 @@ export async function updateUserApi(
   updates: Partial<ApiLogin>
 ) {
   try {
-    const res = await fetch(`https://api-campus.onrender.com/profiles/user/${userId}`, {
+    const res = await fetch(`http://localhost:5000/profiles/user/${userId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),

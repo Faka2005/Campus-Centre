@@ -5,7 +5,7 @@ import { setUserStorage } from './Storagelocal';
 export interface ApiError {
   message?: string;
 }
-//https://api-campus.onrender.com
+//http://localhost:5000
 
 /**
  * 🔹 Enfregistre utilisateur et le connecte
@@ -24,7 +24,7 @@ export async function RegisterUserApi(
   sexe}:RegisterUser
 ) {
   try {
-    const res = await fetch("https://api-campus.onrender.com/register/user", {
+    const res = await fetch("http://localhost:5000/register/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ firstName, lastName, email, password ,sexe}),
@@ -56,7 +56,7 @@ export async function LoginUserApi(
   password}:LoginUser
 ) {
   try {
-    const res = await fetch("https://api-campus.onrender.com/login/user", {
+    const res = await fetch("http://localhost:5000/login/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({  email, password }),
@@ -84,7 +84,7 @@ export async function LoginUserApi(
  */
 export async function DeleteUserApi(id: string) {
   try {
-    const res = await fetch(`https://api-campus.onrender.com/delete/user/${id}`, {
+    const res = await fetch(`http://localhost:5000/delete/user/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
@@ -126,7 +126,7 @@ export function logout(){
  */
 export async function updateUserApi(userId: string, updates: Partial<RegisterUser>) {
   try {
-    const res = await fetch(`https://api-campus.onrender.com/profiles/user/${userId}`, {
+    const res = await fetch(`http://localhost:5000/profiles/user/${userId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),
@@ -167,11 +167,11 @@ export function useUsersStatus(userIds: string[]): UserStatus {
         const initialStatus: UserStatus = {};
         userIds.forEach((id) => (initialStatus[id] = false));
         setStatus(initialStatus);
-
+        console.log(status);
         return () => {
             socket.off("user_status_update", handleStatus);
         };
-    }, [userIds]);
+    }, [status, userIds]);
 
     return status;
 }
