@@ -5,7 +5,7 @@ import { setUserStorage } from './Storagelocal';
 export interface ApiError {
   message?: string;
 }
-//http://localhost:5000
+//https://api-campus.onrender.com
 
 /**
  * 🔹 Enfregistre utilisateur et le connecte
@@ -24,7 +24,7 @@ export async function RegisterUserApi(
   sexe}:RegisterUser
 ) {
   try {
-    const res = await fetch("http://localhost:5000/register/user", {
+    const res = await fetch("https://api-campus.onrender.com/register/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ firstName, lastName, email, password ,sexe}),
@@ -56,7 +56,7 @@ export async function LoginUserApi(
   password}:LoginUser
 ) {
   try {
-    const res = await fetch("http://localhost:5000/login/user", {
+    const res = await fetch("https://api-campus.onrender.com/login/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({  email, password }),
@@ -84,7 +84,7 @@ export async function LoginUserApi(
  */
 export async function DeleteUserApi(id: string) {
   try {
-    const res = await fetch(`http://localhost:5000/delete/user/${id}`, {
+    const res = await fetch(`https://api-campus.onrender.com/delete/user/${id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
@@ -126,7 +126,7 @@ export function logout(){
  */
 export async function updateUserApi(userId: string, updates: Partial<RegisterUser>) {
   try {
-    const res = await fetch(`http://localhost:5000/profiles/user/${userId}`, {
+    const res = await fetch(`https://api-campus.onrender.com/profiles/user/${userId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),

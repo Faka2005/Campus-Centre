@@ -3,7 +3,7 @@ import { io, Socket } from "socket.io-client";
 import { useState, useEffect } from "react";
 
 // ⚡ Socket unique
-export const socket: Socket = io("http://localhost:5000", {
+export const socket: Socket = io("https://api-campus.onrender.com", {
   autoConnect: false,
   withCredentials: true,
   transports: ["websocket", "polling"],
